@@ -12,40 +12,15 @@ struct MyIp {
   MyIp(int num0, int num1, int num2, int num3)
       : m_num0{num0}, m_num1{num1}, m_num2{num2}, m_num3{num3} {};
   friend std::ostream &operator<<(std::ostream &os, const MyIp &pt) {
-    os << int(pt.m_num0) << "." << int(pt.m_num1) << "." << int(pt.m_num2)
-       << "." << int(pt.m_num3);
+    os << pt.m_num0 << "." << pt.m_num1 << "." << pt.m_num2 << "." << pt.m_num3;
     return os;
-  };
-  friend bool operator>(const MyIp &c1, const MyIp &c2) {
-    if (c1.m_num0 > c2.m_num0) {
-      return true;
-    }
-    if (c1.m_num0 < c2.m_num0) {
-      return false;
-    }
-    if (c1.m_num1 > c2.m_num1) {
-      return true;
-    }
-    if (c1.m_num1 < c2.m_num1) {
-      return false;
-    }
-    if (c1.m_num2 > c2.m_num2) {
-      return true;
-    }
-    if (c1.m_num2 < c2.m_num2) {
-      return false;
-    }
-    if (c1.m_num3 > c2.m_num3) {
-      return true;
-    }
-    if (c1.m_num3 < c2.m_num3) {
-      return false;
-    }
-    return false;
   };
 };
 
-auto compareIp = [](const MyIp &a, const MyIp &b) { return a > b; };
+auto compareIp = [](const MyIp &a, const MyIp &b) {
+  return std::tie(a.m_num0, a.m_num1, a.m_num2, a.m_num3) >
+         std::tie(b.m_num0, b.m_num1, b.m_num2, b.m_num3);
+};
 
 using MySet = std::multiset<MyIp, decltype(compareIp)>;
 
@@ -90,23 +65,23 @@ MySet read(std::istream &in) {
 int main() {
   auto sst{read(std::cin)};
   // выводим полный список адресов после сортировки. Одна строка - один адрес.
-  for (auto num : sst) {
+  for (auto &num : sst) {
     std::cout << num << "\n";
   }
   // выводим список адресов, первый байт которых равен 1.
-  for (auto num : sst) {
+  for (auto &num : sst) {
     if (num.m_num0 == 1) {
       std::cout << num << "\n";
     }
   }
   // выводим список адресов, первый байт которых равен 46, а второй 70.
-  for (auto num : sst) {
+  for (auto &num : sst) {
     if (num.m_num0 == 46 && num.m_num1 == 70) {
       std::cout << num << "\n";
     }
   }
   // выводим список адресов, любой байт которых равен 46.
-  for (auto num : sst) {
+  for (auto &num : sst) {
     if (num.m_num0 == 46 || num.m_num1 == 46 && num.m_num2 == 46 ||
         num.m_num3 == 46) {
       std::cout << num << "\n";
