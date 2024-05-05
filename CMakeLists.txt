@@ -9,7 +9,7 @@ target_include_directories(
     PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
-set_target_properties(test_version PROPERTIES
+set_target_properties(ip_filter PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON
 )
