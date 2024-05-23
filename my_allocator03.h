@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <memory>
+#include <limits>
 
 template <typename T> struct MyAllocator03;
 
@@ -54,9 +55,9 @@ template <typename T> struct MyAllocator03 {
 
   const_pointer address(const_reference x) const { return &x; };
 
-  // size_type max_size() const throw() {
-  //   return std::numeric_limits<size_type>::max() / sizeof(value_type);
-  // };
+  size_type max_size() const throw() {
+    return std::numeric_limits<size_type>::max() / sizeof(value_type);
+  };
 };
 
 template <class T, class U>
