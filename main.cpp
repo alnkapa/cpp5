@@ -1,38 +1,44 @@
-#include "my_set.h"
+#include "my_allocator03.h"
 #include <iostream>
-#include <sstream>
+#include <map>
 
-int main() {
-  auto sst{read(std::cin)};
-  bool enter = false;
-  // выводим полный список адресов после сортировки. Одна строка - один
-  // адрес.
-  for (auto &num : sst) {
-    if (!enter) {
-      // первая строка
-      enter = true;
-    } else {
-      std::cout << "\n";
-    }
-    std::cout << num;
+int factorial(int n)
+{
+  if (n == 0)
+  {
+    return 1;
   }
-  // выводим список адресов, первый байт которых равен 1.
-  for (auto &num : sst) {
-    if (num.m_num0 == 1) {
-      std::cout << "\n" << num;
+  else
+  {
+    return n * factorial(n - 1);
+  }
+}
+int main()
+{
+  {
+    // создание экземпляра std::map<int, int>
+    std::map<int, int> stdMap;
+    // заполнение 10 элементами, где ключ - это число от 0 до 9, а значение - факториал ключа
+    for (int i = 0; i < 10; i++)
+    {
+      stdMap.emplace(i, factorial(i));
+    }
+    for (auto &&v : stdMap)
+    {
+      std::cout << v.first << " " << v.second << "\n";
     }
   }
-  // выводим список адресов, первый байт которых равен 46, а второй 70.
-  for (auto &num : sst) {
-    if (num.m_num0 == 46 && num.m_num1 == 70) {
-      std::cout << "\n" << num;
+  {
+    // создание экземпляра std::map<int, int> с новым аллокатором, ограниченным 10 элементами
+    std::map<int, int, std::less<int>, MyAllocator03<int>> o3Map;
+    // заполнение 10 элементами, где ключ - это число от 0 до 9, а значение - факториал ключа
+    for (int i = 0; i < 10; i++)
+    {
+      o3Map.emplace(i, factorial(i));
     }
-  }
-  // выводим список адресов, любой байт которых равен 46.
-  for (auto &num : sst) {
-    if (num.m_num0 == 46 || num.m_num1 == 46 && num.m_num2 == 46 ||
-        num.m_num3 == 46) {
-      std::cout << "\n" << num;
+    for (auto &&v : o3Map)
+    {
+      std::cout << v.first << " " << v.second << "\n";
     }
   }
   return 0;
