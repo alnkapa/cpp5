@@ -25,14 +25,29 @@ template <typename T, std::size_t N> struct MyAllocator03 {
   template <typename U> struct rebind { typedef MyAllocator03<U, N> other; };
 
   MyAllocator03() throw(){};
+  // MyAllocator(const MyAllocator &other) : MyAllocator(){};
 
   template <typename U, std::size_t N1>
   MyAllocator03(MyAllocator03<U, N1> const &u) throw(){};
-
+  // ~MyAllocator() {
+  //   // for (size_t i = 0; i < blocks.size(); ++i) {
+  //   //   ::operator delete(blocks[i]);
+  //   // }
+  // };
   /**
    * allocate memory
    */
   pointer allocate(size_type n, MyAllocator03<void, 0>::const_pointer = 0) {
+    /*
+    if (n > BlockSize) {
+            throw std::bad_alloc();
+        }
+        if (currentBlockPos + n > currentBlockEnd) {
+            allocateBlock();
+        }
+        pointer result = currentBlock + currentBlockPos;
+        currentBlockPos += n;
+    */
     return static_cast<pointer>(::operator new(n * sizeof(value_type)));
   }
 
@@ -57,8 +72,21 @@ template <typename T, std::size_t N> struct MyAllocator03 {
   const_pointer address(const_reference x) const { return &x; };
 
   size_type max_size() const throw() {
+    // return BlockSize
     return std::numeric_limits<size_type>::max() / sizeof(value_type);
   };
+
+  // private:
+  //   void allocateBlock() {
+  //       currentBlock = static_cast<pointer>(::operator new(BlockSize *
+  //       sizeof(T))); currentBlockPos = 0; currentBlockEnd = BlockSize;
+  //       blocks.push_back(currentBlock);
+  //   }
+
+  //   pointer currentBlock;
+  //   size_type currentBlockPos;
+  //   size_type currentBlockEnd;
+  //   std::vector<pointer> blocks;
 };
 
 template <class T, std::size_t N, class U, std::size_t N1>
@@ -66,7 +94,7 @@ bool operator==(MyAllocator03<T, N> const &, MyAllocator03<U, N1> const &) {
   return true;
 }
 
-template <class T, std::size_t N, class U,  std::size_t N1>
-bool operator!=(MyAllocator03<T,N> const &x, MyAllocator03<U,N1> const &y) {
+template <class T, std::size_t N, class U, std::size_t N1>
+bool operator!=(MyAllocator03<T, N> const &x, MyAllocator03<U, N1> const &y) {
   return !(x == y);
 }
