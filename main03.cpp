@@ -21,7 +21,7 @@ int main() {
     }
   }
   {
-    typedef std::map<int, int, std::less<int>, MyAllocator03<int> > map_t;
+    typedef std::map<int, int, std::less<int>, MyAllocator03<int,10> > map_t;
     // создание экземпляра std::map<int, int> с новым аллокатором, ограниченным
     // 10 элементами
     // MyAllocator03<int>

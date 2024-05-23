@@ -1,20 +1,20 @@
 #pragma once
 #include <iostream>
-#include <memory>
 #include <limits>
+#include <memory>
 
-template <typename T> struct MyAllocator03;
+template <typename T, std::size_t N> struct MyAllocator03;
 
-template <> struct MyAllocator03<void> {
+template <> struct MyAllocator03<void, 0> {
   typedef void value_type;
   typedef value_type *pointer;
   typedef value_type const *const_pointer;
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
-  template <typename U> struct rebind { typedef MyAllocator03<U> other; };
+  template <typename U> struct rebind { typedef MyAllocator03<U, 0> other; };
 };
 
-template <typename T> struct MyAllocator03 {
+template <typename T, std::size_t N> struct MyAllocator03 {
   typedef T value_type;
   typedef T *pointer;
   typedef const T *const_pointer;
@@ -22,16 +22,17 @@ template <typename T> struct MyAllocator03 {
   typedef const T &const_reference;
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
-  template <typename U> struct rebind { typedef MyAllocator03<U> other; };
+  template <typename U> struct rebind { typedef MyAllocator03<U, N> other; };
 
-  MyAllocator03() throw(){}; 
+  MyAllocator03() throw(){};
 
-  template <typename U> MyAllocator03(MyAllocator03<U> const &u) throw(){};
+  template <typename U, std::size_t N1>
+  MyAllocator03(MyAllocator03<U, N1> const &u) throw(){};
 
   /**
    * allocate memory
    */
-  pointer allocate(size_type n, MyAllocator03<void>::const_pointer = 0) {
+  pointer allocate(size_type n, MyAllocator03<void, 0>::const_pointer = 0) {
     return static_cast<pointer>(::operator new(n * sizeof(value_type)));
   }
 
@@ -60,12 +61,12 @@ template <typename T> struct MyAllocator03 {
   };
 };
 
-template <class T, class U>
-bool operator==(MyAllocator03<T> const &, MyAllocator03<U> const &) {
+template <class T, std::size_t N, class U, std::size_t N1>
+bool operator==(MyAllocator03<T, N> const &, MyAllocator03<U, N1> const &) {
   return true;
 }
 
-template <class T, class U>
-bool operator!=(MyAllocator03<T> const &x, MyAllocator03<U> const &y) {
+template <class T, std::size_t N, class U,  std::size_t N1>
+bool operator!=(MyAllocator03<T,N> const &x, MyAllocator03<U,N1> const &y) {
   return !(x == y);
 }
