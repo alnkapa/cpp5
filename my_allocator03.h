@@ -3,7 +3,7 @@
 #include <limits>
 #include <memory>
 
-template <typename T, std::size_t N>
+template <typename T, int N>
 struct MyAllocator03;
 
 template <>
@@ -19,24 +19,14 @@ struct MyAllocator03<void, 0>
   {
     typedef MyAllocator03<U, 0> other;
   };
-
-private:
-  //   void allocateBlock() {
-  //       currentBlock = static_cast<pointer>(::operator new(BlockSize *
-  //       sizeof(T))); currentBlockPos = 0; currentBlockEnd = BlockSize;
-  //       blocks.push_back(currentBlock);
-  //   }
-
-  //  pointer allocate(size_type n, MyAllocator03<void, 0>::const_pointer = 0) {
-  // MyAllocator03<void, 0>::const_pointer;
-  static pointer ptr;
-  // static MyAllocator03<void, 0>::const_pointer n_pointer = 0;
-  //    size_type currentBlockPos;
-  //    size_type currentBlockEnd;
-  //    std::vector<pointer> blocks;
 };
-
-template <typename T, std::size_t N>
+/**
+ * С++03
+ * Аллокатор работает с фиксированным количеством элементов.
+ * Попытку выделить большее число элементов считать ошибкой.
+ * @param N кол-во элементов
+ */
+template <typename T, int N>
 class MyAllocator03
 {
 public:
@@ -54,7 +44,7 @@ public:
   };
   ~MyAllocator03(){};
   MyAllocator03(){};
-  template <typename U, std::size_t N1>
+  template <typename U, int N1>
   MyAllocator03(MyAllocator03<U, N1> const &u){};
   /**
    * allocate memory
@@ -110,22 +100,22 @@ public:
 /*
  * хорошо бы еще понять что я тут делаю
  */
-template <class T, std::size_t N>
+template <class T, int N>
 T MyAllocator03<T, N>::ptr[N] = {};
 
 /*
  * хорошо бы еще понять что я тут делаю
  */
-template <class T, std::size_t N>
+template <class T, int N>
 int MyAllocator03<T, N>::next = 0;
 
-template <class T, std::size_t N, class U, std::size_t N1>
+template <class T, int N, class U, int N1>
 bool operator==(MyAllocator03<T, N> const &, MyAllocator03<U, N1> const &)
 {
   return (N == N1);
 }
 
-template <class T, std::size_t N, class U, std::size_t N1>
+template <class T, int N, class U, int N1>
 bool operator!=(MyAllocator03<T, N> const &x, MyAllocator03<U, N1> const &y)
 {
   return !(N == N1 && x == y);
