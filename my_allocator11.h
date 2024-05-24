@@ -4,10 +4,10 @@
 #include <memory>
 
 template <typename T, int N>
-struct MyAllocator03;
+struct MyAllocator11;
 
 template <>
-struct MyAllocator03<void, 0>
+struct MyAllocator11<void, 0>
 {
   typedef void value_type;
   typedef value_type *pointer;
@@ -17,7 +17,7 @@ struct MyAllocator03<void, 0>
   template <typename U>
   struct rebind
   {
-    typedef MyAllocator03<U, 0> other;
+    typedef MyAllocator11<U, 0> other;
   };
 };
 /**
@@ -27,7 +27,7 @@ struct MyAllocator03<void, 0>
  * @param N кол-во элементов
  */
 template <typename T, int N>
-class MyAllocator03
+class MyAllocator11
 {
 public:
   typedef T value_type;
@@ -40,18 +40,18 @@ public:
   template <typename U>
   struct rebind
   {
-    typedef MyAllocator03<U, N> other;
+    typedef MyAllocator11<U, N> other;
   };
-  ~MyAllocator03()
+  ~MyAllocator11()
   {
     std::cout << "dtor " << std::endl;
   };
-  MyAllocator03()
+  MyAllocator11()
   {
     std::cout << "tor " << std::endl;
   };
   template <typename U, int N1>
-  MyAllocator03(MyAllocator03<U, N1> const &u) {}
+  MyAllocator11(MyAllocator11<U, N1> const &u) {}
   /**
    * allocate memory
    */
@@ -104,22 +104,22 @@ private:
  * хорошо бы еще понять что я тут делаю
  */
 template <class T, int N>
-T MyAllocator03<T, N>::ptr[N] = {};
+T MyAllocator11<T, N>::ptr[N] = {};
 
 /*
  * хорошо бы еще понять что я тут делаю
  */
 template <class T, int N>
-int MyAllocator03<T, N>::next = 0;
+int MyAllocator11<T, N>::next = 0;
 
 template <class T, int N, class U, int N1>
-bool operator==(MyAllocator03<T, N> const &, MyAllocator03<U, N1> const &)
+bool operator==(MyAllocator11<T, N> const &, MyAllocator11<U, N1> const &)
 {
   return (N == N1);
 }
 
 template <class T, int N, class U, int N1>
-bool operator!=(MyAllocator03<T, N> const &x, MyAllocator03<U, N1> const &y)
+bool operator!=(MyAllocator11<T, N> const &x, MyAllocator11<U, N1> const &y)
 {
   return !(N == N1 && x == y);
 }
