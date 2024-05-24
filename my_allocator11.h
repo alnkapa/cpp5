@@ -3,27 +3,13 @@
 #include <limits>
 #include <memory>
 
-template <typename T, int N>
-struct MyAllocator11;
-
-template <>
-struct MyAllocator11<void, 0>
-{
-  typedef void value_type;
-  typedef value_type *pointer;
-  typedef value_type const *const_pointer;
-  typedef std::size_t size_type;
-  typedef std::ptrdiff_t difference_type;
-  template <typename U>
-  struct rebind
-  {
-    typedef MyAllocator11<U, 0> other;
-  };
-};
 /**
- * С++03
+ * С++11
  * Аллокатор работает с фиксированным количеством элементов.
- * Попытку выделить большее число элементов считать ошибкой.
+ * При попытке выделить число элементов,
+ * которое превышает текущее зарезервированное количество,
+ * аллокатор расширяет зарезервированную память.
+ * реализовать поэлементное освобождение
  * @param N кол-во элементов
  */
 template <typename T, int N>

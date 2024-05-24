@@ -3,27 +3,13 @@
 #include <limits>
 #include <memory>
 
-template <typename T, int N>
-struct MyAllocator03;
-
-template <>
-struct MyAllocator03<void, 0>
-{
-  typedef void value_type;
-  typedef value_type *pointer;
-  typedef value_type const *const_pointer;
-  typedef std::size_t size_type;
-  typedef std::ptrdiff_t difference_type;
-  template <typename U>
-  struct rebind
-  {
-    typedef MyAllocator03<U, 0> other;
-  };
-};
 /**
  * С++03
  * Аллокатор работает с фиксированным количеством элементов.
  * Попытку выделить большее число элементов считать ошибкой.
+ *
+ * с с++11 и больше выпадает в корку
+ *
  * @param N кол-во элементов
  */
 template <typename T, int N>
@@ -51,7 +37,7 @@ public:
     std::cout << "tor " << std::endl;
   };
   template <typename U, int N1>
-  MyAllocator03(MyAllocator03<U, N1> const &u) {}
+  MyAllocator03(const MyAllocator03<U, N1> &u) {}
   /**
    * allocate memory
    */
@@ -115,11 +101,11 @@ int MyAllocator03<T, N>::next = 0;
 template <class T, int N, class U, int N1>
 bool operator==(MyAllocator03<T, N> const &, MyAllocator03<U, N1> const &)
 {
-  return (N == N1);
+  return false;
 }
 
 template <class T, int N, class U, int N1>
 bool operator!=(MyAllocator03<T, N> const &x, MyAllocator03<U, N1> const &y)
 {
-  return !(N == N1 && x == y);
+  return true;
 }

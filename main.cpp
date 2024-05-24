@@ -1,4 +1,5 @@
 #include "my_allocator11.h"
+#include "my_allocator03.h"
 #include <iostream>
 #include <map>
 #include <exception>
@@ -21,7 +22,7 @@ int main()
   {
     // создание экземпляра std::map<int, int> с новым аллокатором, ограниченным
     // 10 элементами
-    typedef std::map<int, int, std::less<int>, MyAllocator11<pair_t, 10> > map_t;
+    typedef std::map<int, int, std::less<int>, MyAllocator03<pair_t, 10> > map_t;
     map_t o3Map;
     for (int i = 0; i < 13; i++)
     {
