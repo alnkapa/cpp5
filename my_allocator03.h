@@ -49,11 +49,11 @@ public:
   /**
    * allocate memory
    */
-  pointer allocate(size_type n, MyAllocator03<void, 0>::const_pointer = 0)
+  pointer allocate(size_type n)
   {
-    if (n > N || next + 1 > N)
+    if (n > N || next + n > N)
       throw std::bad_alloc();
-    next += 1;
+    next += n;
     return &(ptr[next]);
   }
 
@@ -87,7 +87,6 @@ public:
    */
   size_type max_size() const throw()
   {
-    // return std::numeric_limits<size_type>::max() / sizeof(value_type);
     return N;
   };
 
