@@ -54,7 +54,7 @@ public:
     if (n > N || next + 1 > N)
       throw std::bad_alloc();
     next += 1;
-    return &(ptr[next]);;
+    return &(ptr[next]);
   }
 
   /**
