@@ -53,11 +53,8 @@ public:
   {
     if (n > N || next + 1 > N)
       throw std::bad_alloc();
-
-    pointer p = 0;
-    p = &(ptr[next]);
     next += 1;
-    return p;
+    return &(ptr[next]);;
   }
 
   /**
