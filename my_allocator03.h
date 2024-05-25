@@ -3,12 +3,15 @@
 #include <limits>
 #include <memory>
 
-
 template <typename T, typename U> struct is_same {
   static const bool value = false;
 };
 
 template <typename T> struct is_same<T, T> { static const bool value = true; };
+
+template <typename T, typename U> struct if_same_enable {};
+
+template <typename T> struct if_same_enable<T, T> { typedef void type; };
 /**
  * С++03
  * Аллокатор работает с фиксированным количеством элементов.
@@ -27,16 +30,16 @@ public:
   typedef std::ptrdiff_t difference_type;
   template <typename U> struct rebind { typedef MyAllocator03<U, N> other; };
   ~MyAllocator03(){};
-  MyAllocator03(){};
+  MyAllocator03() : m_next(0){};
   template <typename U, int N1> MyAllocator03(const MyAllocator03<U, N1> &u) {}
   /**
    * allocate memory
    */
   pointer allocate(size_type n) {
-    if (n > N || next + n > N)
+    if (n > N || m_next + n > N)
       throw std::bad_alloc();
-    pointer result = ptr + next;
-    next += n;
+    pointer result = m_ptr + m_next;
+    m_next += n;
     return result;
   }
   /**
@@ -61,12 +64,9 @@ public:
   size_type max_size() const throw() { return N; };
 
 private:
-  static value_type ptr[N];
-  static int next;
+  value_type m_ptr[N];
+  int m_next;
 };
-template <class T, int N> T MyAllocator03<T, N>::ptr[N] = {};
-
-template <class T, int N> int MyAllocator03<T, N>::next = 0;
 
 template <class T, int N, class U, int N1>
 bool operator==(MyAllocator03<T, N> const &, MyAllocator03<U, N1> const &) {
