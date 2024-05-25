@@ -3,7 +3,6 @@
 #include <limits>
 #include <memory>
 
-// select_on_container_copy_construction
 
 template <typename T, typename U> struct is_same {
   static const bool value = false;
@@ -14,8 +13,6 @@ template <typename T> struct is_same<T, T> { static const bool value = true; };
  * С++03
  * Аллокатор работает с фиксированным количеством элементов.
  * Попытку выделить большее число элементов считать ошибкой.
- *
- * с с++11 и больше выпадает в корку
  *
  * @param N кол-во элементов
  */
@@ -42,7 +39,6 @@ public:
     next += n;
     return result;
   }
-
   /**
    * deallocate memory
    */
@@ -58,10 +54,6 @@ public:
    * call object destructor
    */
   void destroy(pointer p) { p->~value_type(); };
-
-  pointer address(reference x) const { return &x; };
-
-  const_pointer address(const_reference x) const { return &x; };
 
   /**
    * @return number of object
