@@ -26,7 +26,13 @@ public:
   template <typename U> struct rebind { typedef MyAllocator17<U, N> other; };
   MyAllocator17() { m_store.reserve(N); };
   template <typename U, int N1> MyAllocator17(const MyAllocator17<U, N1> &u) {}
-  ~MyAllocator17(){};
+  ~MyAllocator17() {
+    for (auto &&p : m_store) {
+      if (p) {
+        ::operator delete(p);
+      }
+    }
+  };
 
   /**
    * allocate memory
@@ -34,10 +40,9 @@ public:
   pointer allocate(size_type n) {
     pointer result =
         static_cast<pointer>(::operator new(sizeof(value_type) * n));
-    if (auto it = std::find_if(begin(m_store), end(m_store),
-                               [](pointer ptr) { return ptr == nullptr; });
-        it != std::end(m_store)) {
-      m_store.insert(it, result);
+    auto it = std::find(m_store.begin(), m_store.end(), nullptr);
+    if (it != m_store.end()) {
+      *it = result;
     } else {
       m_store.push_back(result);
     }
@@ -47,13 +52,12 @@ public:
    * deallocate memory
    */
   void deallocate(pointer p, size_type n) {
-    if (auto it = std::find_if(begin(m_store), end(m_store),
-                               [p](pointer ptr) { return ptr == p; });
-        it != std::end(m_store)) {
-      m_store.insert(it, nullptr);
+    auto it = std::find(m_store.begin(), m_store.end(), p);
+    if (it != m_store.end()) {
+      ::operator delete(p);
+      *it = nullptr;
     }
   };
-
   /**
    * call object constructor
    */
@@ -64,11 +68,7 @@ public:
    * call object destructor
    */
   void destroy(pointer p) { p->~value_type(); };
-
-  /**
-   * @return number of object
-   */
-  size_type max_size() const throw() { return m_store.size(); };
+  size_type max_size() const throw() { return N; };
 
 private:
   std::vector<pointer> m_store{};

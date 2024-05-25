@@ -58,9 +58,6 @@ public:
    */
   void destroy(pointer p) { p->~value_type(); };
 
-  /**
-   * @return number of object
-   */
   size_type max_size() const throw() { return N; };
 
 private:
