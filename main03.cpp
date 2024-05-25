@@ -13,15 +13,6 @@ int factorial(int n) {
 }
 int main() {
 
-  MyAllocator03<int, 10> alloc1;
-  MyAllocator03<int, 10> alloc2;
-  MyAllocator03<float, 10> alloc3;
-
-  std::cout << (alloc1 == alloc2) << std::endl; // Должно вывести 1 (true)
-  std::cout << (alloc1 != alloc2) << std::endl; // Должно вывести 0 (false)
-  std::cout << (alloc1 == alloc3) << std::endl; // Должно вывести 0 (false)
-  std::cout << (alloc1 != alloc3) << std::endl; // Должно вывести 1 (true)
-
   typedef std::pair<const int, int> pair_t;
   {
     // создание экземпляра std::map<int, int>
