@@ -68,7 +68,9 @@ public:
    * call object destructor
    */
   void destroy(pointer p) { p->~value_type(); };
-  size_type max_size() const throw() { return N; };
+  size_type max_size() const throw() {
+    return std::numeric_limits<size_type>::max();
+  };
 
 private:
   std::vector<pointer> m_store{};
