@@ -13,9 +13,10 @@ public:
   struct Node {
     T value;
     Node *next;
+    Node() : value(), next(nullptr) {}
     Node(const T &value) : value(value), next(nullptr) {}
   };
-  using value_type = T;  
+  using value_type = T;
   using reference = T &;
   using const_reference = const T &;
   using pointer = T *;
@@ -78,13 +79,29 @@ public:
     return *this;
   }
 
-  MyList(MyList &&other) noexcept {
+  
+  ~MyList() { clear(); }
+
+  MyList(MyList &&other) noexcept
+      : m_head(other.m_head), m_tail(other.m_tail), m_size(other.m_size),
+        m_node_allocator(std::move(other.m_node_allocator)) {
     other.m_head = nullptr;
     other.m_tail = nullptr;
     other.m_size = 0;
   }
-
-  ~MyList() { clear(); }
+  MyList &operator=(MyList &&other) noexcept {
+    if (this != &other) {
+      clear();
+      m_head = other.m_head;
+      m_tail = other.m_tail;
+      m_size = other.m_size;
+      m_node_allocator = std::move(other.m_node_allocator);
+      other.m_head = nullptr;
+      other.m_tail = nullptr;
+      other.m_size = 0;
+    }
+    return *this;
+  }
 
   size_type max_size() const { return std::numeric_limits<size_type>::max(); }
   size_type size() const { return m_size; }
@@ -119,7 +136,12 @@ public:
 
   void push_back(const T &value) {
     Node *new_node = m_node_allocator.allocate(1);
-    m_node_allocator.construct(new_node, value);
+    try {
+      m_node_allocator.construct(new_node, value);
+    } catch (...) {
+      m_node_allocator.deallocate(new_node, 1);
+      throw;
+    }
     new_node->next = nullptr;
     if (m_tail) {
       m_tail->next = new_node;
@@ -129,6 +151,23 @@ public:
     m_tail = new_node;
     ++m_size;
   };
+  template <typename... Args> void emplace_back(Args &&...args) {
+    Node *new_node = m_node_allocator.allocate(1);
+    try {
+      m_node_allocator.construct(new_node, std::forward<Args>(args)...);
+    } catch (...) {
+      m_node_allocator.deallocate(new_node, 1);
+      throw;
+    }
+    new_node->next = nullptr;
+    if (m_tail) {
+      m_tail->next = new_node;
+    } else {
+      m_head = new_node;
+    }
+    m_tail = new_node;
+    ++m_size;
+  }
   void pop_back() {
     if (!m_head)
       throw std::out_of_range("List is empty");
@@ -158,6 +197,56 @@ public:
     }
     m_tail = nullptr;
     m_size = 0;
+  }
+  iterator insert(iterator pos, const T &value) {
+    if (pos == end()) {
+      push_back(value);
+      return iterator(m_tail);
+    }
+    Node *new_node = m_node_allocator.allocate(1);
+    try {
+      m_node_allocator.construct(new_node, value);
+    } catch (...) {
+      m_node_allocator.deallocate(new_node, 1);
+      throw;
+    }
+    Node *current = pos.m_node;
+    if (current == m_head) {
+      new_node->next = m_head;
+      m_head = new_node;
+    } else {
+      Node *prev = m_head;
+      while (prev->next != current) {
+        prev = prev->next;
+      }
+      prev->next = new_node;
+      new_node->next = current;
+    }
+    ++m_size;
+    return iterator(new_node);
+  }
+
+  iterator erase(iterator pos) {
+    if (pos == end())
+      return end();
+    Node *current = pos.m_node;
+    if (current == m_head) {
+      m_head = m_head->next;
+      if (m_head == nullptr)
+        m_tail = nullptr;
+    } else {
+      Node *prev = m_head;
+      while (prev->next != current) {
+        prev = prev->next;
+      }
+      prev->next = current->next;
+      if (current == m_tail)
+        m_tail = prev;
+    }
+    m_node_allocator.destroy(current);
+    m_node_allocator.deallocate(current, 1);
+    --m_size;
+    return iterator(current->next);
   }
 
 private:

@@ -15,17 +15,20 @@ int main() {
 
   typedef std::pair<const int, int> pair_t;
   {
-    // создание экземпляра std::map<int, int>
+    // 1) создание экземпляра std::map<int, int>
     std::map<int, int> stdMap;
-    // заполнение 10 элементами, где ключ - это число от 0 до 9, а значение -
-    // факториал ключа
+    // 2)  заполнение 10 элементами, где ключ - это число от 0 до 9, а значение
+    // - факториал ключа
     for (int i = 0; i < 10; i++) {
       stdMap.insert(pair_t(i, factorial(i)));
     }
   }
   {
-    // создание экземпляра std::map<int, int> с новым аллокатором, ограниченным
-    // 10 элементами
+    // 3) создание экземпляра std::map<int, int> с новым аллокатором,
+    // ограниченным 10 элементами
+    //
+    // 4) заполнение 10 элементами, где ключ - это число от 0 до 9, а значение -
+    // факториал ключа
     typedef std::map<int, int, std::less<int>, MyAllocator03<pair_t, 10> > map_t;
     map_t o3Map;
     for (int i = 0; i < 2; i++) {
@@ -35,6 +38,8 @@ int main() {
         std::cout << "exception:" << e.what() << "\n";
       };
     }
+    // 5) вывод на экран всех значений (ключ и значение разделены пробелом)
+    // хранящихся в контейнере
     for (map_t::const_iterator it = o3Map.begin(); it != o3Map.end(); it++) {
       std::cout << (*it).first << " " << (*it).second << "\n";
     }

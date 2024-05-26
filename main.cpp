@@ -5,28 +5,33 @@
 #include <map>
 #include <utility>
 
-int factorial(int n) {
-  if (n == 0) {
-    return 1;
-  } else {
-    return n * factorial(n - 1);
-  }
-}
-using pair_t = std::pair<const int, int>;
 int main() {
   {
-    typedef std::map<int, int, std::less<int>, MyAllocator17<pair_t, 10>> map_t;
-    map_t o3Map;
+    // 6) создание экземпляра своего контейнера для хранения значений типа int
+    MyList<int> list;
+    // 7) заполнение 10 элементами от 0 до 9
     for (int i = 0; i < 10; i++) {
       try {
-        o3Map.emplace(i, factorial(i));
+        list.push_back(i);
       } catch (const std::exception &e) {
         std::cout << "exception:" << e.what() << "\n";
       };
     }
-    for (map_t::const_iterator it = o3Map.begin(); it != o3Map.end(); it++) {
-      std::cout << (*it).first << " " << (*it).second << "\n";
+    // 8) создание экземпляра своего контейнера для хранения значений типа int с
+    // новым аллокатором, ограниченным 10 элементами
+    MyList<int, MyAllocator17<int, 10>> list1;
+    // 9) заполнение 10 элементами от 0 до 9
+    for (int i = 0; i < 10; i++) {
+      try {
+        list1.push_back(i);
+      } catch (const std::exception &e) {
+        std::cout << "exception:" << e.what() << "\n";
+      };
     }
-  }  
+    // 10) вывод на экран всех значений, хранящихся в контейнере
+    for (auto it = list.begin(); it != list.end(); it++) {
+      std::cout << (*it)<< "\n";
+    }
+  }
   return 0;
 }
