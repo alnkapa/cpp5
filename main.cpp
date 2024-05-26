@@ -23,7 +23,7 @@ int main() {
     // 9) заполнение 10 элементами от 0 до 9
     for (int i = 0; i < 10; i++) {
       try {
-        list1.push_back(i);
+        list1.emplace_back(i);
       } catch (const std::exception &e) {
         std::cout << "exception:" << e.what() << "\n";
       };
