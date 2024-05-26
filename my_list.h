@@ -151,6 +151,7 @@ public:
     m_tail = new_node;
     ++m_size;
   };
+
   template <typename... Args> void emplace_back(Args &&...args) {
     Node *new_node = m_node_allocator.allocate(1);
     try {
@@ -168,6 +169,7 @@ public:
     m_tail = new_node;
     ++m_size;
   }
+
   void pop_back() {
     if (!m_head)
       throw std::out_of_range("List is empty");
@@ -188,6 +190,7 @@ public:
     }
     --m_size;
   }
+
   void clear() {
     while (m_head) {
       Node *next = m_head->next;
@@ -198,6 +201,7 @@ public:
     m_tail = nullptr;
     m_size = 0;
   }
+  
   iterator insert(iterator pos, const T &value) {
     if (pos == end()) {
       push_back(value);
