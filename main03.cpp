@@ -28,7 +28,7 @@ int main() {
     // 10 элементами
     typedef std::map<int, int, std::less<int>, MyAllocator03<pair_t, 10> > map_t;
     map_t o3Map;
-    for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < 2; i++) {
       try {
         o3Map.insert(pair_t(i, factorial(i)));
       } catch (const std::exception &e) {

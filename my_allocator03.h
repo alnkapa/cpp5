@@ -29,9 +29,11 @@ public:
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
   template <typename U> struct rebind { typedef MyAllocator03<U, N> other; };
-  ~MyAllocator03(){};
-  MyAllocator03() : m_next(0){};
-  template <typename U, int N1> MyAllocator03(const MyAllocator03<U, N1> &u) {}
+  ~MyAllocator03() { std::cout << "dtor" << std::endl; };
+  MyAllocator03() : m_next(0) { std::cout << "tor" << std::endl; };
+  template <typename U, int N1> MyAllocator03(const MyAllocator03<U, N1> &u) {
+    std::cout << "ctor" << std::endl;
+  }
   /**
    * allocate memory
    */
