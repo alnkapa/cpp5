@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -27,35 +28,38 @@ public:
   MyAllocator17() { m_store.reserve(N); };
   template <typename U, int N1> MyAllocator17(const MyAllocator17<U, N1> &u) {}
   ~MyAllocator17() {
-    for (auto &&p : m_store) {
-      if (p) {
-        ::operator delete(p);
-      }
-    }
+    m_free.clear();
+    m_store.clear();
   };
 
   /**
    * allocate memory
    */
   pointer allocate(size_type n) {
-    pointer result =
-        static_cast<pointer>(::operator new(sizeof(value_type) * n));
-    auto it = std::find(m_store.begin(), m_store.end(), nullptr);
-    if (it != m_store.end()) {
-      *it = result;
-    } else {
-      m_store.push_back(result);
+    if (n > 1) {
+      throw std::bad_alloc();
     }
-    return result;
+    if (!m_free.empty()) {
+      auto index = m_free.back();
+      m_free.pop_back();
+      return &m_store[index];
+    } else {
+      m_store.emplace_back();
+      return &m_store.back();
+    }
   }
   /**
    * deallocate memory
    */
   void deallocate(pointer p, size_type n) {
-    auto it = std::find(m_store.begin(), m_store.end(), p);
-    if (it != m_store.end()) {
-      ::operator delete(p);
-      *it = nullptr;
+    if (n > 1) {
+      throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < m_store.size(); i++) {
+      if (&m_store[i] == p) {
+        m_free.push_back(i);
+        break;
+      }
     }
   };
   /**
@@ -73,7 +77,8 @@ public:
   };
 
 private:
-  std::vector<pointer> m_store{};
+  std::vector<int> m_free{};
+  std::vector<value_type> m_store{};
 };
 
 template <class T, int N, class U, int N1>
