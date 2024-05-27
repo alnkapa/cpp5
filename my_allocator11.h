@@ -28,6 +28,17 @@ public:
     typedef MyAllocator17<U, N> other;
   };
   /**
+   * allocator can be move
+   */
+  using propagate_on_container_move_assignment = std::true_type;
+  using propagate_on_container_swap = std::true_type;
+
+  /**
+   * allocator can be copy
+   */
+  using propagate_on_container_copy_assignment = std::true_type; // select_on_container_copy_construction ??
+
+  /**
    * construct allocator
    */
   MyAllocator17()
