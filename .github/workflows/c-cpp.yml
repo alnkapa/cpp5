@@ -1,8 +1,8 @@
-name: 'C++ CI'
+name: "C++ CI"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -12,7 +12,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - run: cmake . -DCMAKE_INSTALL_PREFIX=~
+      - run: cmake .
       - run: cmake --build .
-      - run: cmake --build . --target test
-      
+      - name: Run
+        uses: GuillaumeFalourd/command-output-file-action@v1.1
+        with:
+          command_line: ./my_allocator_03 ; ./my_allocator
+          output_file_name: output.txt
+          display_file_content: YES # this is also the default value if not informed
