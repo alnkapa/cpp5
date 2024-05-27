@@ -21,19 +21,26 @@ class MyAllocator17
 public:
   using value_type = T;
   using pointer = T *;
-  using const_pointer = const T *;
-  using reference = T &;
-  using const_reference = const T &;
-  using difference_type = std::ptrdiff_t;
   using size_type = std::size_t;
   template <typename U>
   struct rebind
   {
     typedef MyAllocator17<U, N> other;
   };
-  MyAllocator17() { m_store.reserve(N); };
+  /**
+   * construct allocator
+   */
+  MyAllocator17()
+  {
+    m_store.reserve(N);
+  };
   template <typename U, int N1>
-  MyAllocator17(const MyAllocator17<U, N1> &u) {}
+  MyAllocator17(const MyAllocator17<U, N1> &u)
+  {
+  }
+  /**
+   * destruct allocator
+   */
   ~MyAllocator17()
   {
     m_free.clear();
@@ -43,7 +50,7 @@ public:
   /**
    * allocate memory
    */
-  pointer allocate(size_type n)
+  pointer allocate(size_type n, const void *hint = 0)
   {
     if (n > 1)
     {
@@ -82,17 +89,16 @@ public:
   /**
    * call object constructor
    */
-  void construct(pointer p, value_type const &val)
+  void construct(pointer p, const value_type &val)
   {
     ::new (p) value_type(val);
   }
   /**
    * call object destructor
    */
-  void destroy(pointer p) { p->~value_type(); };
-  size_type max_size() const throw()
+  void destroy(pointer p)
   {
-    return std::numeric_limits<size_type>::max();
+    p->~value_type();
   };
 
 private:
@@ -103,7 +109,7 @@ private:
 template <class T, int N, class U, int N1>
 bool operator==(MyAllocator17<T, N> const &, MyAllocator17<U, N1> const &)
 {
-  return (N == N1);
+  return (N == N1 && std::is_same<T, U>::value);
 }
 
 template <class T, int N, class U, int N1>

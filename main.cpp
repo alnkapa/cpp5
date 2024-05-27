@@ -22,6 +22,8 @@ int main()
         std::cout << "exception:" << e.what() << "\n";
       };
     }
+  }
+  {
     // 8) создание экземпляра своего контейнера для хранения значений типа int с
     // новым аллокатором, ограниченным 10 элементами
     MyList<int, MyAllocator17<int, 10>> list1;
@@ -38,7 +40,7 @@ int main()
       };
     }
     // 10) вывод на экран всех значений, хранящихся в контейнере
-    for (auto it = list.begin(); it != list.end(); it++)
+    for (auto it = list1.begin(); it != list1.end(); it++)
     {
       std::cout << (*it) << "\n";
     }
