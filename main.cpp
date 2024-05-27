@@ -5,15 +5,20 @@
 #include <map>
 #include <utility>
 
-int main() {
+int main()
+{
   {
     // 6) создание экземпляра своего контейнера для хранения значений типа int
     MyList<int> list;
     // 7) заполнение 10 элементами от 0 до 9
-    for (int i = 0; i < 10; i++) {
-      try {
+    for (int i = 0; i < 10; i++)
+    {
+      try
+      {
         list.push_back(i);
-      } catch (const std::exception &e) {
+      }
+      catch (const std::exception &e)
+      {
         std::cout << "exception:" << e.what() << "\n";
       };
     }
@@ -21,16 +26,21 @@ int main() {
     // новым аллокатором, ограниченным 10 элементами
     MyList<int, MyAllocator17<int, 10>> list1;
     // 9) заполнение 10 элементами от 0 до 9
-    for (int i = 0; i < 10; i++) {
-      try {
+    for (int i = 0; i < 10; i++)
+    {
+      try
+      {
         list1.emplace_back(i);
-      } catch (const std::exception &e) {
+      }
+      catch (const std::exception &e)
+      {
         std::cout << "exception:" << e.what() << "\n";
       };
     }
     // 10) вывод на экран всех значений, хранящихся в контейнере
-    for (auto it = list.begin(); it != list.end(); it++) {
-      std::cout << (*it)<< "\n";
+    for (auto it = list.begin(); it != list.end(); it++)
+    {
+      std::cout << (*it) << "\n";
     }
   }
   return 0;

@@ -15,7 +15,9 @@
  * реализовать поэлементное освобождение
  * @param N кол-во элементов
  */
-template <typename T, int N> class MyAllocator17 {
+template <typename T, int N>
+class MyAllocator17
+{
 public:
   using value_type = T;
   using pointer = T *;
@@ -24,10 +26,16 @@ public:
   using const_reference = const T &;
   using difference_type = std::ptrdiff_t;
   using size_type = std::size_t;
-  template <typename U> struct rebind { typedef MyAllocator17<U, N> other; };
+  template <typename U>
+  struct rebind
+  {
+    typedef MyAllocator17<U, N> other;
+  };
   MyAllocator17() { m_store.reserve(N); };
-  template <typename U, int N1> MyAllocator17(const MyAllocator17<U, N1> &u) {}
-  ~MyAllocator17() {
+  template <typename U, int N1>
+  MyAllocator17(const MyAllocator17<U, N1> &u) {}
+  ~MyAllocator17()
+  {
     m_free.clear();
     m_store.clear();
   };
@@ -35,15 +43,20 @@ public:
   /**
    * allocate memory
    */
-  pointer allocate(size_type n) {
-    if (n > 1) {
+  pointer allocate(size_type n)
+  {
+    if (n > 1)
+    {
       throw std::bad_alloc();
     }
-    if (!m_free.empty()) {
+    if (!m_free.empty())
+    {
       auto index = m_free.back();
       m_free.pop_back();
       return &m_store[index];
-    } else {
+    }
+    else
+    {
       m_store.emplace_back();
       return &m_store.back();
     }
@@ -51,12 +64,16 @@ public:
   /**
    * deallocate memory
    */
-  void deallocate(pointer p, size_type n) {
-    if (n > 1) {
+  void deallocate(pointer p, size_type n)
+  {
+    if (n > 1)
+    {
       throw std::bad_alloc();
     }
-    for (size_t i = 0; i < m_store.size(); i++) {
-      if (&m_store[i] == p) {
+    for (size_t i = 0; i < m_store.size(); i++)
+    {
+      if (&m_store[i] == p)
+      {
         m_free.push_back(i);
         break;
       }
@@ -65,14 +82,16 @@ public:
   /**
    * call object constructor
    */
-  void construct(pointer p, value_type const &val) {
+  void construct(pointer p, value_type const &val)
+  {
     ::new (p) value_type(val);
   }
   /**
    * call object destructor
    */
   void destroy(pointer p) { p->~value_type(); };
-  size_type max_size() const throw() {
+  size_type max_size() const throw()
+  {
     return std::numeric_limits<size_type>::max();
   };
 
@@ -82,11 +101,13 @@ private:
 };
 
 template <class T, int N, class U, int N1>
-bool operator==(MyAllocator17<T, N> const &, MyAllocator17<U, N1> const &) {
+bool operator==(MyAllocator17<T, N> const &, MyAllocator17<U, N1> const &)
+{
   return (N == N1);
 }
 
 template <class T, int N, class U, int N1>
-bool operator!=(MyAllocator17<T, N> const &x, MyAllocator17<U, N1> const &y) {
+bool operator!=(MyAllocator17<T, N> const &x, MyAllocator17<U, N1> const &y)
+{
   return !(N == N1 && x == y);
 }

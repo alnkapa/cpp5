@@ -8,9 +8,12 @@
  * совместимость с контейнерами stl – итераторы, вспомогательные методы size,
  * empty и т.д.
  */
-template <typename T, class Allocator = std::allocator<T>> class MyList {
+template <typename T, class Allocator = std::allocator<T>>
+class MyList
+{
 public:
-  struct Node {
+  struct Node
+  {
     T value;
     Node *next;
     Node() : value(), next(nullptr) {}
@@ -26,7 +29,8 @@ public:
   using allocator_type = Allocator;
   using node_allocator_type = typename Allocator::template rebind<Node>::other;
 
-  class iterator {
+  class iterator
+  {
   public:
     using value_type = T;
     using reference = T &;
@@ -40,18 +44,21 @@ public:
 
     pointer operator->() const { return &(m_node->value); }
 
-    iterator &operator++() {
+    iterator &operator++()
+    {
       m_node = m_node->next;
       return *this;
     }
 
-    iterator operator++(int) {
+    iterator operator++(int)
+    {
       iterator temp = *this;
       ++(*this);
       return temp;
     }
 
-    bool operator==(const iterator &other) const {
+    bool operator==(const iterator &other) const
+    {
       return m_node == other.m_node;
     }
 
@@ -64,33 +71,40 @@ public:
 
   MyList() : m_head(nullptr), m_tail(nullptr), m_size(0), m_node_allocator() {}
 
-  MyList(const MyList &other) {
-    for (Node *node = other.m_head; node != nullptr; node = node->next) {
+  MyList(const MyList &other)
+  {
+    for (Node *node = other.m_head; node != nullptr; node = node->next)
+    {
       push_back(node->value);
     }
   }
-  MyList &operator=(const MyList &other) {
-    if (this != &other) {
+  MyList &operator=(const MyList &other)
+  {
+    if (this != &other)
+    {
       clear();
-      for (Node *node = other.m_head; node != nullptr; node = node->next) {
+      for (Node *node = other.m_head; node != nullptr; node = node->next)
+      {
         push_back(node->value);
       }
     }
     return *this;
   }
 
-  
   ~MyList() { clear(); }
 
   MyList(MyList &&other) noexcept
       : m_head(other.m_head), m_tail(other.m_tail), m_size(other.m_size),
-        m_node_allocator(std::move(other.m_node_allocator)) {
+        m_node_allocator(std::move(other.m_node_allocator))
+  {
     other.m_head = nullptr;
     other.m_tail = nullptr;
     other.m_size = 0;
   }
-  MyList &operator=(MyList &&other) noexcept {
-    if (this != &other) {
+  MyList &operator=(MyList &&other) noexcept
+  {
+    if (this != &other)
+    {
       clear();
       m_head = other.m_head;
       m_tail = other.m_tail;
@@ -113,74 +127,98 @@ public:
   iterator end() { return iterator(nullptr); }
   const_iterator end() const { return const_iterator(nullptr); }
 
-  reference front() {
+  reference front()
+  {
     if (!m_head)
       throw std::out_of_range("List is empty");
     return m_head->value;
   }
-  const_reference front() const {
+  const_reference front() const
+  {
     if (!m_head)
       throw std::out_of_range("List is empty");
     return m_head->value;
   }
-  reference back() {
+  reference back()
+  {
     if (!m_head)
       throw std::out_of_range("List is empty");
     return m_tail->value;
   }
-  const_reference back() const {
+  const_reference back() const
+  {
     if (!m_head)
       throw std::out_of_range("List is empty");
     return m_tail->value;
   }
 
-  void push_back(const T &value) {
+  void push_back(const T &value)
+  {
     Node *new_node = m_node_allocator.allocate(1);
-    try {
+    try
+    {
       m_node_allocator.construct(new_node, value);
-    } catch (...) {
+    }
+    catch (...)
+    {
       m_node_allocator.deallocate(new_node, 1);
       throw;
     }
     new_node->next = nullptr;
-    if (m_tail) {
+    if (m_tail)
+    {
       m_tail->next = new_node;
-    } else {
+    }
+    else
+    {
       m_head = new_node;
     }
     m_tail = new_node;
     ++m_size;
   };
 
-  template <typename... Args> void emplace_back(Args &&...args) {
+  template <typename... Args>
+  void emplace_back(Args &&...args)
+  {
     Node *new_node = m_node_allocator.allocate(1);
-    try {
+    try
+    {
       m_node_allocator.construct(new_node, std::forward<Args>(args)...);
-    } catch (...) {
+    }
+    catch (...)
+    {
       m_node_allocator.deallocate(new_node, 1);
       throw;
     }
     new_node->next = nullptr;
-    if (m_tail) {
+    if (m_tail)
+    {
       m_tail->next = new_node;
-    } else {
+    }
+    else
+    {
       m_head = new_node;
     }
     m_tail = new_node;
     ++m_size;
   }
 
-  void pop_back() {
+  void pop_back()
+  {
     if (!m_head)
       throw std::out_of_range("List is empty");
 
-    if (m_head == m_tail) {
+    if (m_head == m_tail)
+    {
       m_node_allocator.destroy(m_head);
       m_node_allocator.deallocate(m_head, 1);
       m_head = m_tail = nullptr;
-    } else {
+    }
+    else
+    {
       Node *current = m_head;
-      while (current->next != m_tail) {
+      while (current->next != m_tail)
+      {
         current = current->next;
       }
       m_node_allocator.destroy(m_tail);
@@ -191,8 +229,10 @@ public:
     --m_size;
   }
 
-  void clear() {
-    while (m_head) {
+  void clear()
+  {
+    while (m_head)
+    {
       Node *next = m_head->next;
       m_node_allocator.destroy(m_head);
       m_node_allocator.deallocate(m_head, 1);
@@ -201,26 +241,35 @@ public:
     m_tail = nullptr;
     m_size = 0;
   }
-  
-  iterator insert(iterator pos, const T &value) {
-    if (pos == end()) {
+
+  iterator insert(iterator pos, const T &value)
+  {
+    if (pos == end())
+    {
       push_back(value);
       return iterator(m_tail);
     }
     Node *new_node = m_node_allocator.allocate(1);
-    try {
+    try
+    {
       m_node_allocator.construct(new_node, value);
-    } catch (...) {
+    }
+    catch (...)
+    {
       m_node_allocator.deallocate(new_node, 1);
       throw;
     }
     Node *current = pos.m_node;
-    if (current == m_head) {
+    if (current == m_head)
+    {
       new_node->next = m_head;
       m_head = new_node;
-    } else {
+    }
+    else
+    {
       Node *prev = m_head;
-      while (prev->next != current) {
+      while (prev->next != current)
+      {
         prev = prev->next;
       }
       prev->next = new_node;
@@ -230,17 +279,22 @@ public:
     return iterator(new_node);
   }
 
-  iterator erase(iterator pos) {
+  iterator erase(iterator pos)
+  {
     if (pos == end())
       return end();
     Node *current = pos.m_node;
-    if (current == m_head) {
+    if (current == m_head)
+    {
       m_head = m_head->next;
       if (m_head == nullptr)
         m_tail = nullptr;
-    } else {
+    }
+    else
+    {
       Node *prev = m_head;
-      while (prev->next != current) {
+      while (prev->next != current)
+      {
         prev = prev->next;
       }
       prev->next = current->next;
