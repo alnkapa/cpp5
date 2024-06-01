@@ -58,14 +58,26 @@ namespace impl
   }
   namespace iteration3
   {
+    template<typename T>
+    struct extract_value_type
+    {
+      typedef T value_type;
+    };
+    template<template<typename, typename ...> class X, typename T, typename ...Args>
+    struct extract_value_type<X<T, Args...>>
+    {
+      typedef T value_type;
+    };    
     /**
      * вывод любых контейнеров
      */
     template <typename T,
-              typename = std::enable_if_t<begin_end::has<T>::value, bool>>
+              typename = std::enable_if_t<begin_end::has<T>::value, bool>,
+              typename = std::enable_if_t<operator_shift::has<T>::value,bool>>
     constexpr void print_ip(const T &in, int)
     {
       bool is_point = false;
+      extract_value_type<T>;
       for (auto it = in.begin(); it != in.end(); it++)
       {
         if (is_point)
