@@ -39,6 +39,8 @@ https://ntamonsec.blogspot.com/2020/06/github-actions-doxygen-documentation.html
 https://dev.to/denvercoder1/using-github-actions-to-publish-doxygen-docs-to-github-pages-177g
 https://wiki.jlab.org/epsciwiki/images/a/aa/HostingDocsOnGithub.pdf
 
+https://habr.com/ru/articles/252101/
+
 Включить в репозиторий файл Doxyfile с включенными опциями HAVE_DOT и EXTRACT_ALL.
 ------------------------------------------------------------------------------------------------------------
 Дополнительные требования
