@@ -86,7 +86,9 @@ namespace impl
       }
       std::cout << std::endl;
     }
-
+    /**
+     * вывод остальных
+     */
     template <typename T>
     constexpr void print_ip(const T &in, long)
     {
