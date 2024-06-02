@@ -40,6 +40,7 @@ https://dev.to/denvercoder1/using-github-actions-to-publish-doxygen-docs-to-gith
 https://wiki.jlab.org/epsciwiki/images/a/aa/HostingDocsOnGithub.pdf
 
 https://habr.com/ru/articles/252101/
+https://habr.com/ru/articles/133512/
 
 Включить в репозиторий файл Doxyfile с включенными опциями HAVE_DOT и EXTRACT_ALL.
 ------------------------------------------------------------------------------------------------------------
