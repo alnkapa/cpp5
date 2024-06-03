@@ -159,7 +159,7 @@ constexpr void print_ip(const T &in)
 namespace tuple
 {
   /**
-   * хак необходимый для истанцирования шаблона с последним типом 
+   * хак необходимый для истанцирования шаблона с последним типом
    * с 189 строке кода
    * -------------------------------
    *  if(0 != 0) {
@@ -209,10 +209,10 @@ constexpr void print_tuple(const T &in, std::index_sequence<N...>)
 /**
  * вывод кортежа
  */
-template <typename... Types,
-          typename = std::enable_if_t<tuple::has<Types...>(), bool>>
+template <typename... Types>
 constexpr void print_ip(const std::tuple<Types...> &in)
 {
+  static_assert(tuple::has<Types...>() == true, "all type in tuple mast be same");
   print_tuple(in, std::make_index_sequence<sizeof...(Types)>());
   std::cout << std::endl;
 }
@@ -227,6 +227,6 @@ int main()
   print_ip(std::vector<int>{100, 200, 300, 400}); // 100.200.300.400
   print_ip(std::list<short>{400, 300, 200, 100}); // 400.300.200.100
   print_ip(std::make_tuple(123, 456, 789, 0));    // 123.456.789.0
-  // print_ip(std::make_tuple(123, 456, 789, "привет")); // ошибка
+  //print_ip(std::make_tuple(123, 456, 789, "привет")); // ошибка
   return 0;
 }
