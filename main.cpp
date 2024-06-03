@@ -59,6 +59,77 @@ namespace impl
       static constexpr bool value = decltype(check<U>(int{}))::value;
     };
   } // namespace begin_end
+  namespace tuple
+  {
+    /**
+     * хак необходимый для истанцирования шаблона с последним типом
+     * с 189 строке кода
+     * -------------------------------
+     *  if(0 != 0) {
+     *     return has<const char *>();
+     * } else {
+     *     return true;
+     * }
+     * -------------------------------
+     */
+    template <typename T1>
+    constexpr bool has()
+    {
+      return true;
+    }
+    /**
+     * по 2 сравниваем типы
+     */
+    template <
+        typename T1,
+        typename T2,
+        typename... Other>
+    constexpr bool has()
+    {
+      if (!std::is_same<T1, T2>::value)
+      {
+        return false;
+      }
+      if (sizeof...(Other) != 0)
+      {
+        return has<T2, Other...>();
+      }
+      else
+      {
+        return true;
+      }
+    };
+  } // namespace tuple
+
+  namespace iteration4
+  {
+    /**
+     * для каждого индекса
+     */
+    template <typename T, size_t... N>
+    constexpr void print_tuple(const T &in, std::index_sequence<N...>)
+    {
+      (..., (std::cout << (N == 0 ? "" : ".") << std::get<N>(in)));
+    }
+    /**
+     * вывод кортежа
+     */
+    template <typename... Types>
+    constexpr void print_ip(const std::tuple<Types...> &in)
+    {
+      static_assert(tuple::has<Types...>() == true, "all type in tuple mast be same");
+      print_tuple(in, std::make_index_sequence<sizeof...(Types)>());
+      std::cout << std::endl;
+    }
+    /**
+     * вывод остальных
+     */
+    template <typename T>
+    constexpr void print_ip(const T &in)
+    {
+      std::cout << "undefined" << std::endl;
+    }
+  } // namespace iteration3
   namespace iteration3
   {
     /**
@@ -89,7 +160,7 @@ namespace impl
     template <typename T>
     constexpr void print_ip(const T &in, long)
     {
-      std::cout << "undefined" << std::endl;
+      iteration4::print_ip(in);
     }
   } // namespace iteration3
   namespace iteration2
@@ -150,71 +221,18 @@ namespace impl
     }
   } // namespace iteration1
 } // namespace impl
+
+/*! функция печати условного IP-адреса
+ *  
+ * Подробное описание в task.txt
+ * 
+ * \param[in] условный IP-адреса см. описание в task.txt
+ * \file
+ */
 template <typename T>
 constexpr void print_ip(const T &in)
 {
   impl::iteration1::print_ip(in, int{});
-}
-
-namespace tuple
-{
-  /**
-   * хак необходимый для истанцирования шаблона с последним типом
-   * с 189 строке кода
-   * -------------------------------
-   *  if(0 != 0) {
-   *     return has<const char *>();
-   * } else {
-   *     return true;
-   * }
-   * -------------------------------
-   */
-  template <typename T1>
-  constexpr bool has()
-  {
-    return true;
-  }
-  /**
-   * по 2 сравниваем типы
-   */
-  template <
-      typename T1,
-      typename T2,
-      typename... Other>
-  constexpr bool has()
-  {
-    if (!std::is_same<T1, T2>::value)
-    {
-      return false;
-    }
-    if (sizeof...(Other) != 0)
-    {
-      return has<T2, Other...>();
-    }
-    else
-    {
-      return true;
-    }
-  };
-} // namespace tuple
-
-/**
- * для каждого индекса
- */
-template <typename T, size_t... N>
-constexpr void print_tuple(const T &in, std::index_sequence<N...>)
-{
-  (..., (std::cout << (N == 0 ? "" : ".") << std::get<N>(in)));
-}
-/**
- * вывод кортежа
- */
-template <typename... Types>
-constexpr void print_ip(const std::tuple<Types...> &in)
-{
-  static_assert(tuple::has<Types...>() == true, "all type in tuple mast be same");
-  print_tuple(in, std::make_index_sequence<sizeof...(Types)>());
-  std::cout << std::endl;
 }
 
 int main()
@@ -227,6 +245,6 @@ int main()
   print_ip(std::vector<int>{100, 200, 300, 400}); // 100.200.300.400
   print_ip(std::list<short>{400, 300, 200, 100}); // 400.300.200.100
   print_ip(std::make_tuple(123, 456, 789, 0));    // 123.456.789.0
-  //print_ip(std::make_tuple(123, 456, 789, "привет")); // ошибка
+  // print_ip(std::make_tuple(123, 456, 789, "привет")); // ошибка
   return 0;
 }
