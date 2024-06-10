@@ -1,3 +1,8 @@
+/*! \mainpage print ip
+ *
+ * study test execution
+ */
+
 #include <array>
 #include <cstdint>
 #include <iostream>
@@ -6,11 +11,15 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+/**
+ * \brief  print_ip implementation
+ */
 namespace impl {
     /**
-     * проверка на метод c_str()
+     * \brief check method for c_str()
      */
     namespace c_str {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         template <typename T>
         static auto check(int) -> decltype(std::declval<T>().c_str(), std::true_type());
         template <typename>
@@ -19,12 +28,14 @@ namespace impl {
         struct has {
             static constexpr bool value = decltype(check<U>(int{}))::value;
         };
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
     }  // namespace c_str
 
     /**
-     * проверка на оператор <<
+     * \brief check for operator <<
      */
     namespace operator_shift {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         template <typename T>
         static auto check(int) -> decltype(std::declval<std::ostream &>() << std::declval<T>(), std::true_type());
         template <typename>
@@ -33,11 +44,13 @@ namespace impl {
         struct has {
             static constexpr bool value = decltype(check<U>(int{}))::value;
         };
+#endif
     }  // namespace operator_shift
     /**
-     * проверка на begin() и end()
+     * \brief check method for begin() and end()
      */
     namespace begin_end {
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         template <typename T>
         static auto check(int) -> decltype(std::declval<T>().begin(), std::declval<T>().end(), std::true_type());
 
@@ -48,25 +61,19 @@ namespace impl {
         struct has {
             static constexpr bool value = decltype(check<U>(int{}))::value;
         };
+#endif
     }  // namespace begin_end
+    /**
+     * \brief check for tuple
+     */
     namespace tuple {
-        /**
-         * хак необходимый для истанцирования шаблона с последним типом
-         * с 189 строке кода
-         * -------------------------------
-         *  if(0 != 0) {
-         *     return has<const char *>();
-         * } else {
-         *     return true;
-         * }
-         * -------------------------------
-         */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         template <typename T1>
         constexpr bool has() {
             return true;
         }
         /**
-         * по 2 сравниваем типы
+         *  \brief compare type
          */
         template <typename T1, typename T2, typename... Other>
         constexpr bool has() {
@@ -79,18 +86,21 @@ namespace impl {
                 return true;
             }
         };
+#endif
     }  // namespace tuple
 
+    /**
+     * \brief try tuple or give up
+     */
     namespace iteration4 {
-        /**
-         * для каждого индекса
-         */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
         template <typename T, std::size_t... N>
         constexpr void print_tuple(const T &in, std::index_sequence<N...>) {
             (..., (std::cout << (N == 0 ? "" : ".") << std::get<N>(in)));
         }
+#endif
         /**
-         * вывод кортежа
+         * \brief display tuple
          */
         template <typename... Types>
         constexpr void print_ip(const std::tuple<Types...> &in) {
@@ -99,16 +109,19 @@ namespace impl {
             std::cout << std::endl;
         }
         /**
-         * вывод остальных
+         * \brief give up
          */
         template <typename T>
         constexpr void print_ip(const T &in) {
             std::cout << "undefined" << std::endl;
         }
     }  // namespace iteration4
+    /**
+     * \brief try any container or go to iteration4
+     */
     namespace iteration3 {
         /**
-         * вывод любых контейнеров
+         * \brief display any container
          */
         template <typename T, typename = std::enable_if_t<begin_end::has<T>::value, bool>>
         constexpr void print_ip(const T &in, int) {
@@ -124,32 +137,38 @@ namespace impl {
             std::cout << std::endl;
         }
         /**
-         * вывод остальных
+         * \brief go to iteration4
          */
         template <typename T>
         constexpr void print_ip(const T &in, long) {
             iteration4::print_ip(in);
         }
     }  // namespace iteration3
+    /**
+     * \brief try string or go to iteration3
+     */
     namespace iteration2 {
         /**
-         * вывод строк
+         * \brief display string
          */
         template <typename T, typename = std::enable_if_t<c_str::has<T>::value, bool>>
         constexpr void print_ip(const T &in, int) {
             std::cout << in << std::endl;
         }
         /**
-         * вывод остальных
+         * \brief go to iteration3
          */
         template <typename T>
         constexpr void print_ip(const T &in, long) {
             iteration3::print_ip(in, int{});
         }
     }  // namespace iteration2
+    /**
+     * \brief try integral number or go to iteration2
+     */
     namespace iteration1 {
         /**
-         * вывод на целочисленных значений
+         *  \brief display integral number
          */
         template <typename T, typename = std::enable_if_t<std::is_integral_v<T>, bool>>
         constexpr void print_ip(const T &in, int) {
@@ -169,7 +188,7 @@ namespace impl {
             std::cout << std::endl;
         }
         /**
-         * вывод остальных
+         * \brief go to iteration2
          */
         template <typename T>
         constexpr void print_ip(const T &in, long) {
@@ -178,12 +197,9 @@ namespace impl {
     }  // namespace iteration1
 }  // namespace impl
 
-/*! функция печати условного IP-адреса
- *
- * Подробное описание в task.txt
- *
- * \param[in] условный IP-адреса см. описание в task.txt
- * \file
+/**
+ * \brief pint ip address
+ * \param[in] ip address in format as describe in task.txt
  */
 template <typename T>
 constexpr void print_ip(const T &in) {
