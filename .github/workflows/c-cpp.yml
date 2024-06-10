@@ -17,6 +17,6 @@ jobs:
       - name: Run
         uses: GuillaumeFalourd/command-output-file-action@v1.1
         with:
-          command_line: ./my_allocator_03 ; ./my_allocator
+          command_line: ./print_ip
           output_file_name: output.txt
           display_file_content: YES # this is also the default value if not informed
