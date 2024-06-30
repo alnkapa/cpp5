@@ -1,12 +1,16 @@
 #pragma once
 #include <iostream>
 
-class IEvent {
-   public:
-    virtual void print(std::ostream &) const = 0;
-};
+enum class Type { No, CreateDocument, ExportDocument, ImportDocument, CreateShape, DeleteShape };
 
-class Resize_Event : public IEvent {
-   public:
-    void print(std::ostream &out) const;
+class IEvent {
+   public:    
+    Type type() const { return m_type; };
+    //virtual void print(std::ostream &) const = 0;
+    virtual ~IEvent() = default;
+    IEvent() = delete;
+    IEvent(Type type) : m_type(type){};
+
+   private:
+    Type m_type{Type::No};
 };
