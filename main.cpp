@@ -5,12 +5,8 @@
 namespace model {
     class Shape {
        public:
-        friend std::ostream &operator<<(std::ostream &out, const Shape &in) {
-            for (const auto &v : in.m_vertices) {
-                out << v << " ; ";
-            }
-            return out;
-        }
+        Shape(std::initializer_list<float> in) : m_vertices(in){};
+        const std::vector<float> &data() const { return m_vertices; };
         friend bool operator==(const Shape &a, const Shape &b) { return &a == &b; };
         std::vector<unsigned char> dump() const {
             std::vector<unsigned char> rez{};
@@ -27,20 +23,16 @@ namespace model {
 
     class Document {
        public:
-        friend std::ostream &operator<<(std::ostream &out, const Document &in) {
-            for (const auto &v : in.m_doc) {
-                out << v;
-            }
-            return out;
-        }
         void clear() { m_doc.clear(); };
         void add_shape(Shape &&shape) { m_doc.emplace_back(shape); };
+        void add_shape(Shape &shape) { m_doc.emplace_back(shape); };
         void del_shape(const Shape &shape) {
             auto it = std::find(m_doc.begin(), m_doc.end(), shape);
             if (it != m_doc.end()) {
                 m_doc.erase(it);
             }
         };
+        const std::vector<Shape> &data() const { return m_doc; };
         std::vector<unsigned char> dump() const {
             std::vector<unsigned char> rez{};
             // TODO
@@ -69,19 +61,22 @@ namespace model {
 namespace view {
     class Shape {
        public:
-        Shape(const model::Shape &shape) : m_model(shape){};
-        void render() { std::cout << "Shape: " << m_model << std::endl; };
-
-       private:
-        const model::Shape &m_model;
+        static void render(const std::vector<float> &shape) {
+            std::cout << "Shape: ";
+            for (const auto &v : shape) {
+                std::cout << v << " ; ";
+            }
+        };
     };
     class Document {
        public:
-        Document(const model::Document &document) : m_model(document){};
-        void render() { std::cout << "Document: " << m_model << std::endl; };
-
-       private:
-        const model::Document &m_model;
+        static void render(const std::vector<model::Shape> &document) {
+            for (const auto &v : document) {
+                std::cout << "Document: ";
+                Shape::render(v.data());
+                std::cout << std::endl;
+            }
+        };
     };
 }  // namespace view
 
@@ -89,21 +84,25 @@ class Controller {
    public:
     void clear_document() {  // создание нового документа
         m_model.clear();
-        m_view.render();
+        view::Document::render(m_model.data());
     };
     void create_shape(model::Shape &&shape) {  // создание графического примитива
         m_model.add_shape(std::move(shape));
-        m_view.render();
+        view::Document::render(m_model.data());
+    };
+    void create_shape(model::Shape &shape) {  // создание графического примитива
+        m_model.add_shape(shape);
+        view::Document::render(m_model.data());
     };
 
     void delete_shape(const model::Shape &shape) {  // удаление графического примитива
         m_model.del_shape(shape);
-        m_view.render();
+        view::Document::render(m_model.data());
     };
 
     void import_document(const std::vector<unsigned char> &file) {  // импорт документа из файла
         m_model.import(file);
-        m_view.render();
+        view::Document::render(m_model.data());
     };
     std::vector<unsigned char> export_document() {  // экспорт документа в файл
         return m_model.dump();
@@ -111,11 +110,22 @@ class Controller {
 
    private:
     model::Document m_model{};
-    view::Document m_view{m_model};
 };
 
 int main() {
     auto c{Controller{}};
+    c.clear_document();
+    auto s1{model::Shape{{10, 20, 30, 40}}};
+    c.create_shape(s1);
+    for (int i = 0; i < 2; i++) {
+        c.create_shape(std::move(model::Shape{{11, 12}}));
+    };
+    c.delete_shape(s1);
+    const auto data = c.export_document();
+    for (int i = 0; i < 3; i++) {
+        c.create_shape(std::move(model::Shape{{15, 3}}));
+    };
+    c.import_document(data);
     // TODO
     return 0;
 }
