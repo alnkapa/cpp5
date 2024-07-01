@@ -1,13 +1,6 @@
-#include <iostream>
+#include "controller/controller.h"
 
-#include "UI/window.h"
-
-int main() {
-    auto w{Window{}};
-    try {
-        w.run();
-    } catch (...) {
-        std::cerr << "some error" << std::endl;
-    }
-    return 0;
+int main() { 
+    auto c{Controller{}};
+    return 0; 
 }
