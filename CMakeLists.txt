@@ -10,11 +10,6 @@ target_include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-# target_link_libraries(
-#     editor
-#     UI
-# )
-
 set_target_properties(editor PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
